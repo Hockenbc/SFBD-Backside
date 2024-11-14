@@ -1,3 +1,21 @@
+body{
+    background: rgba(166, 218, 218, 0.668);
+    width: 60%;
+}
 h1{
-    color: blue;
+    color: black;
+    justify-content: center;
+    position: relative;
+}
+#title{
+    justify-content: center;
+    position: relative;
+}
+#puppy-api{
+    justify-content: center;
+    background-color: rgba(224, 244, 240, 0.745);
+    width: 60%;
+    border: 2px teal;
+    border-radius: 10px;
+    position: relative;
 }
