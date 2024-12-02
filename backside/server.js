@@ -1,15 +1,30 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const Joi = require("joi");
+const multer = require("multer");
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
+app.use(express.json());
 app.use(cors());
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, ".public/images/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 
 app.get('/', (req, res)=> {
     res.sendFile(__dirname + "/index.html");
 });
 
-app.get("/api/puppies", (req, res) => {
-    const puppies = [
+let puppies = [
         {
             _id: 1,
             img_name: "images/charlotte.jpg",
@@ -58,8 +73,45 @@ app.get("/api/puppies", (req, res) => {
           description: "Sydney is full of energy and always ready for a game. She’s fun-loving and will keep you entertained with her lively personality."
         }
     ];
+  
+  app.get("/api/puppies", (req, res) => {
     res.send(puppies);
-});
+  });
+
+  app.post("/api/puppies", upload.single("img"), (req, res) => {
+    const result = validatePuppy(req.body);
+
+    if (result.error) {
+      res.status(400).send(result.error.details[0].message);
+      return;
+    }
+
+    const puppy = {
+      _id: puppies.length + 1,
+      name: req.body.name,
+      gender: req.body.gender,
+      description: req.body.description,
+    };
+
+    if (req.file) {
+      puppy.img_name = "images/" + req.file.filename;
+    }
+
+    puppies.push(puppy);
+    res.status(200).send(puppy);
+  });
+
+const validatePuppy = (puppy) => {
+  const schema = Joi.object({
+    _id: Joi.allow(""),
+    name: Joi.string().min(2).required(),
+    gender: Joi.string().min(2).required(),
+    description: Joi.string().min(2).required(),
+  });
+
+  return schema.validate(puppy);
+};
+
 
 app.listen(3001, () => {
     console.log("im listening");
