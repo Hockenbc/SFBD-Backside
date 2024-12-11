@@ -126,6 +126,19 @@ app.put("/api/puppies/:id", upload.single("img"), (req, res) => {
 
 });
 
+app.delete("/api/houses/:id", (req, res) => {
+  const puppy = puppies.find((p) => p._id === parseInt(req.params.id));
+
+  if (!puppy) {
+    res.status(404).send("The puppy with the given id was not found");
+  }
+
+  const index = puppies.indexOf(puppy);
+  puppies.splice(index, 1);
+  res.send(puppy);
+
+});
+
 
 const validatePuppy = (puppy) => {
   const schema = Joi.object({
