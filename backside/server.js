@@ -91,6 +91,7 @@ let puppies = [
       name: req.body.name,
       gender: req.body.gender,
       description: req.body.description,
+      img_name: "images/" + req.file.filename,
     };
 
     if (req.file) {
