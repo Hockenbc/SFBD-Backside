@@ -102,6 +102,31 @@ let puppies = [
     res.status(200).send(puppy);
   });
 
+app.put("/api/puppies/:id", upload.single("img"), (req, res) => {
+    let puppy = puppies.find((p) => p._id === parseInt(req.params.id));
+
+    if (!puppy) res.status(400).send("Puppy with given id was not found");
+
+    const result = validatePuppy(req.body);
+
+    if (result.error) {
+      res.status(400).send(result.error.details[0].message);
+      return;
+    }
+
+    puppy.name = req.body.name;
+    puppy.gender = req.body.gender;
+    puppy.description = req.body.description;
+
+    if (req.file) {
+      puppy.main_image = "images/" + req.file.filename;
+    }
+
+    res.send(puppy);
+
+});
+
+
 const validatePuppy = (puppy) => {
   const schema = Joi.object({
     _id: Joi.allow(""),
