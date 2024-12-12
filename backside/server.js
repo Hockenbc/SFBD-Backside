@@ -7,6 +7,7 @@ app.use(express.static("public"));
 app.use("/images", express.static("public/images"));
 app.use(express.json());
 app.use(cors());
+const mongoose = require("mongoose");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -19,6 +20,16 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+mongoose
+  .connect(
+    "mongodb+srv://Courtney-H:g1KJpdlYINPWYtyc@sfbd.pc575.mongodb.net/?retryWrites=true&w=majority&appName=SFBD"
+  )
+  .then(() =>{
+    console.log("Connect to mongodb")
+  })
+  .catch((error) => {
+    console.log("Couldn't connect to mongodb", error)
+  });
 
 app.get('/', (req, res)=> {
     res.sendFile(__dirname + "/index.html");
